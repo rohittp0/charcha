@@ -8,14 +8,17 @@ class Model:
         self.model_name = model_name
         self.name = name or model_name
         self.system_message = [{"role": "system", "content": system_message}]
-        self.cleaner_regex = re.compile(rf"[:@\s]*{self.name}[:@\s]*", re.IGNORECASE)
+        self.cleaner_regex = re.compile(rf"(\w+:)|(system[\s\n]*)", re.IGNORECASE)
 
     def chat_all(self, messages):
         messages = self.system_message + list(map(self.format_message, messages))
         response = ollama.chat(model=self.model_name, messages=messages)
 
         response = response["message"]["content"]
-        response = self.cleaner_regex.sub("", response)
+        response = self.cleaner_regex.sub("", response).strip()
+
+        if response == "":
+            return None
 
         return {"role": self.name, "content": response}
 
@@ -24,6 +27,6 @@ class Model:
 
     def format_message(self, message):
         if self.is_not_me(message):
-            return {"role": "user", "content": f"{message['role']}: {message['content']}"}
+            return {"role": "user", "content": message['content']}
 
         return {"role": "assistant", "content": message["content"]}
