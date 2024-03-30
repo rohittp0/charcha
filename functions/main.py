@@ -1,30 +1,16 @@
-import json
-from pathlib import Path
+from typing import List
 
+import firebase_admin
 import httpx
 import ollama
+from firebase_admin import credentials, firestore
 
 from config import Config
 from model import Model
-from ui import create_ui
-
-from firebase_admin import initialize_app
-
-initialize_app()
 
 
 def get_formatted(message):
     return f"{'-' * 50}\n{message['role']}: {message['content']}\n{'-' * 50}\n\n"
-
-
-def init_files():
-    config = Config()
-
-    Path(config.chat_json).parent.mkdir(parents=True, exist_ok=True)
-    Path(config.chat_json).touch()
-
-    Path(config.chat_html).parent.mkdir(parents=True, exist_ok=True)
-    Path(config.chat_html).touch()
 
 
 def init_models():
@@ -34,7 +20,7 @@ def init_models():
         for progress in ollama.pull(config.model, stream=True):
             percent = progress.get("completed", 0) / progress.get("total", 1) * 100
             print(f"\rOllama Pull: {progress['status']} - {percent} %", end="")
-        print("\r")
+        print("\r", '' * 100)
 
     except httpx.ConnectError:
         print("Error: unable to connect to Ollama API")
@@ -43,39 +29,48 @@ def init_models():
     return [Model(model["name"], model["personality"]) for model in config.agents]
 
 
+def chat_on_topic(topic: firestore.firestore.DocumentSnapshot, models: List[Model]):
+    messages = [{"role": "User", "content": topic.get("prompt")}]
+    chats_collection = topic.reference.collection("chats")
+
+    print(f"Starting chat on topic: {topic.get('prompt')}")
+    print("==+ Chat Room +==\n")
+
+    max_messages = Config().max_messages
+
+    for _ in range(max_messages):
+        for model in models:
+            response = model.chat_all(messages)
+
+            if response is None:
+                continue
+
+            chats_collection.add({**response, "timestamp": firestore.firestore.SERVER_TIMESTAMP})
+            messages.append(response)
+
+            print(get_formatted(response), end="")
+
+        messages = messages[-max_messages:]
+    topic.reference.update({"completed": True})
+
+
 def main():
-    init_files()
+    # Use a service account.
+    cred = credentials.Certificate('serviceAccount.json')
+
+    app = firebase_admin.initialize_app(cred)
+    db = firestore.client(app)
 
     models = init_models()
-    config = Config()
 
-    with open(config.chat_json, "w") as file:
-        messages = [{"role": "User", "content": input("What do you want to talk about?\n")}]
+    topics = db.collection("topics").where("completed", "==", False).stream()
 
-        file.write(f"[{json.dumps(messages[0])}")
-        print("\n==+ Chat Room +==\n")
-
-        while True:
-            try:
-                for model in models:
-                    response = model.chat_all(messages)
-
-                    if response is None:
-                        continue
-
-                    print(get_formatted(response), end="")
-                    file.write(f",{json.dumps(response)}")
-
-                    messages.append(response)
-
-                messages = messages[-config.max_messages:]
-            except KeyboardInterrupt:
-                break
-
-        file.write("]")
-
-    create_ui(config.chat_json, config.chat_html)
-    print(f"Chat saved at {config.chat_json} and {config.chat_html}")
+    for topic in topics:
+        try:
+            chat_on_topic(topic, models)
+        except Exception as e:
+            print(f"Error: {e}")
+            topic.reference.update({"completed": True, "error": str(e)})
 
 
 if __name__ == "__main__":
