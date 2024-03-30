@@ -8,6 +8,10 @@ from config import Config
 from model import Model
 from ui import create_ui
 
+from firebase_admin import initialize_app
+
+initialize_app()
+
 
 def get_formatted(message):
     return f"{'-' * 50}\n{message['role']}: {message['content']}\n{'-' * 50}\n\n"

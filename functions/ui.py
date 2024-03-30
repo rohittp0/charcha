@@ -18,7 +18,7 @@ POSITIONS = ["right", "left"]
 
 def create_ui(chat_json: str, chat_html: str):
     chat = json.load(open(chat_json, "rb"))
-    template_html = open("template/chat.html", "r").read()
+    template_html = open("../template/chat.html", "r").read()
 
     messages = [MSG_TEMPLATE.format(**message, position=POSITIONS[i % 2]) for i, message in enumerate(chat)]
     messages = "".join(messages)
