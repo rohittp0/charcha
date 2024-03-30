@@ -51,3 +51,11 @@ class Config:
     @property
     def agents(self) -> List[Agent]:
         return self._config["agents"]
+
+    @property
+    def chat_json(self) -> str:
+        return self._config["system"].get("chat_json", "output/chat.json")
+
+    @property
+    def chat_html(self) -> str:
+        return self._config["system"].get("chat_html", "output/chat.html")

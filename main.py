@@ -1,14 +1,26 @@
 import json
+from pathlib import Path
 
 import httpx
 import ollama
 
 from config import Config
 from model import Model
+from ui import create_ui
 
 
 def get_formatted(message):
     return f"{'-' * 50}\n{message['role']}: {message['content']}\n{'-' * 50}\n\n"
+
+
+def init_files():
+    config = Config()
+
+    Path(config.chat_json).parent.mkdir(parents=True, exist_ok=True)
+    Path(config.chat_json).touch()
+
+    Path(config.chat_html).parent.mkdir(parents=True, exist_ok=True)
+    Path(config.chat_html).touch()
 
 
 def init_models():
@@ -28,9 +40,12 @@ def init_models():
 
 
 def main():
-    models = init_models()
+    init_files()
 
-    with open("chat.json", "w") as file:
+    models = init_models()
+    config = Config()
+
+    with open(config.chat_json, "w") as file:
         messages = [{"role": "User", "content": input("What do you want to talk about?\n")}]
 
         file.write(f"[{json.dumps(messages[0])},")
@@ -49,11 +64,14 @@ def main():
 
                     messages.append(response)
 
-                messages = messages[-10:]
+                messages = messages[-config.max_messages:]
             except KeyboardInterrupt:
                 break
 
         file.write("]")
+
+    create_ui(config.chat_json, config.chat_html)
+    print(f"Chat saved at {config.chat_json} and {config.chat_html}")
 
 
 if __name__ == "__main__":
