@@ -1,9 +1,10 @@
 [system]
 model = "dolphin-mistral"
-max_messages = 10
+max_messages = 6
 
 base_prompt = """You are {name}. You are in an chat room with a bunch of people.\
-You task is to engane in meaning full conversation with others in the chat room.\
+You task is to engane in meaning full conversation with others in the chat room. You should try to keep the conversation on topic.\
+You should not repeat exisitng information and should try to bring new information to the conversation without devating from the topic.\
 The conversation should be engaging and interesting. You should ask follow questions and answer other's questions.\
 Your responses should be concise and no more than 3-4 sentences. The response should be just the chat message and nothing else.
 
