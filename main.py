@@ -48,7 +48,7 @@ def main():
     with open(config.chat_json, "w") as file:
         messages = [{"role": "User", "content": input("What do you want to talk about?\n")}]
 
-        file.write(f"[{json.dumps(messages[0])},")
+        file.write(f"[{json.dumps(messages[0])}")
         print("\n==+ Chat Room +==\n")
 
         while True:
@@ -60,7 +60,7 @@ def main():
                         continue
 
                     print(get_formatted(response), end="")
-                    file.write(f"{json.dumps(response)},")
+                    file.write(f",{json.dumps(response)}")
 
                     messages.append(response)
 

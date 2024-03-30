@@ -3,3 +3,4 @@ venv/
 .idea/
 chat.json
 output/
+*.log
