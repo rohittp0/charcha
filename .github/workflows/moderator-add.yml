@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  demo:
+  approve:
     if: ${{ github.event.issue.pull_request }} # only run on pull request comments
     runs-on: ubuntu-latest
     steps:
@@ -24,6 +24,7 @@ jobs:
           reaction-type: "eyes"
           allow-edits: "false"
           permission-level: admin
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify Command Arguments
         run: |
@@ -41,6 +42,8 @@ jobs:
             gh pr comment ${{ github.event.issue.number }} --body "The file ${{ steps.command.outputs.command-args }} does not exist."
             exit 1
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Install pip dependencies
         run: pip3 install firebase-admin
@@ -53,3 +56,5 @@ jobs:
 
       - name: Add Output Comment
         run: gh pr comment "${{ github.event.pull_request.number }}" -F message.md
+        env:
+          GH_TOKEN: ${{ github.token }}
