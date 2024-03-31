@@ -1,0 +1,32 @@
+name: Moderator PR Verification
+
+on:
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
+    paths:
+      - 'moderators/*.json'
+
+jobs:
+  verify-pr-conditions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh jq
+
+      - name: Verify JSON structure and post message
+        run: |
+          FILE_ADDED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'moderators/.*.json')
+          NAME=$(jq -r '.name' $FILE_ADDED)
+          UID=$(jq -r '.uid' $FILE_ADDED)
+          DESCRIPTION=$(jq -r '.description' $FILE_ADDED)
+          MESSAGE="## ${NAME} Wants to become a community moderator\n\n### Description\n${DESCRIPTION}\n\n**UID**: \`${UID}\`"
+          echo "$MESSAGE" > message.md
+          gh pr comment "${{ github.event.pull_request.number }}" -F message.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
