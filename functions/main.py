@@ -66,7 +66,9 @@ def chat_worker(topic_queue: Queue, models: List[Model]):
 
         try:
             if topic.get("completed") or topic.get("active"):
-                return print(f"Skipping as topic: {topic.get('prompt')} already completed or active")
+                print(f"Skipping as topic: {topic.get('prompt')} already completed or active")
+                topic_queue.task_done()
+                continue
 
             topic.reference.update({"active": True})
             chat_on_topic(topic, models)
