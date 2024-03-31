@@ -46,7 +46,7 @@ jobs:
             moderator_email=$(jq -r '.email' "$FILE_ADDED")
 
             # Check if values were successfully extracted
-            if [[ -n "$moderator_name" && -n "$moderator_email" ]]; then
+            if [[ "$moderator_name" != "null" && "$moderator_email" != "null" ]]; then
               echo "### ${moderator_name} Wants to become a community moderator" > message.md
               echo "Anyone with admin access can use `/approve` to approve this request." >> message.md
               echo "" >> message.md
