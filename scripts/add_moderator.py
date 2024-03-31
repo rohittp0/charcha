@@ -32,4 +32,5 @@ if __name__ == '__main__':
         print("Environment variables 'FIREBASE_SERVICE_ACCOUNT_JSON' or 'MODERATOR_FILE' are not set.")
         exit(1)
 
+    moderator_file = f"moderators/{moderator_file}.json"
     add_moderator_claim(service_account, moderator_file)
