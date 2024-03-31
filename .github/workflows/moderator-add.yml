@@ -29,21 +29,10 @@ jobs:
       - name: Verify Command Arguments
         run: |
           ${{ steps.command.outputs.command-name }} == "approve" || exit 0
-          ${{ steps.command.outputs.command-args }} | grep -q -E ".+\.json" || exit 0
 
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.branch-deploy.outputs.ref }}
-
-      - name: Check file exists
-        run: |
-          mod_file="moderators/${{ steps.command.outputs.command-arguments }}.json"
-          if [ ! -f mod_file ]; then
-            gh pr comment ${{ github.event.issue.number }} --body "The file ${mod_file} does not exist."
-            exit 1
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: Install pip dependencies
         run: pip3 install firebase-admin
