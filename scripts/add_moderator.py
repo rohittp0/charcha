@@ -27,12 +27,12 @@ def add_moderator_claim(service_account_json, moderator_json_file):
     try:
         auth.get_user(uid)
     except auth.UserNotFoundError:
-        print(f"Unable to make {name} moderator, user with UID **{uid}** not found.")
+        print(f"Unable to make **{name}** moderator, user with UID `{uid}` not found.")
         exit(1)
 
     auth.set_custom_user_claims(uid, {'moderator': True})
 
-    print(f"**{name}** has been successfully added as a moderator.\n\n---\n**UID**: {uid}")
+    print(f"**{name}** has been successfully added as a moderator.\n\n---\n**UID**: `{uid}`")
 
 
 if __name__ == '__main__':
