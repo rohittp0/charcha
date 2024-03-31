@@ -31,8 +31,11 @@ jobs:
           ${{ steps.command.outputs.command-name }} == "approve" || exit 0
 
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.branch-deploy.outputs.ref }}
+
+      - name: Checkout Pull Request
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install pip dependencies
         run: pip3 install firebase-admin
