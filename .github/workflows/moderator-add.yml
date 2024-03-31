@@ -44,6 +44,6 @@ jobs:
           MODERATOR_FILE: ${{ steps.command.outputs.command-arguments }}
 
       - name: Add Output Comment
-        run: gh pr comment "${{ github.event.pull_request.number }}" -F message.md
+        run: gh pr comment "${{ github.event.issue.number }}" -F message.md
         env:
           GH_TOKEN: ${{ github.token }}
