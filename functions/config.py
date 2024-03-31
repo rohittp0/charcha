@@ -22,7 +22,7 @@ class Config:
         if "system" not in config:
             raise ValueError("Config must have a 'system' key.")
 
-        for key in ["model", "max_messages", "base_prompt"]:
+        for key in ["model", "max_messages", "base_prompt", "service_account_path"]:
             if key not in config["system"]:
                 raise ValueError(f"Config must have a '{key}' key in 'system'.")
 
@@ -51,3 +51,7 @@ class Config:
     @property
     def agents(self) -> List[Agent]:
         return self._config["agents"]
+
+    @property
+    def service_account_path(self):
+        return self._config["system"]["service_account_path"]
