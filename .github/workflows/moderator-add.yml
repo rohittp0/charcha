@@ -37,9 +37,9 @@ jobs:
 
       - name: Check file exists
         run: |
-          mod_file="moderators/${{ steps.command.outputs.command-args }}"
+          mod_file="moderators/${{ steps.command.outputs.command-args }}.json"
           if [ ! -f mod_file ]; then
-            gh pr comment ${{ github.event.issue.number }} --body "The file ${{ steps.command.outputs.command-args }} does not exist."
+            gh pr comment ${{ github.event.issue.number }} --body "The file ${mod_file} does not exist."
             exit 1
           fi
         env:
@@ -52,7 +52,7 @@ jobs:
         run: python3 scripts/add_moderator.py > message.md
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          MODERATOR_FILE: "moderators/${{ steps.command.outputs.command-args }}"
+          MODERATOR_FILE: "moderators/${{ steps.command.outputs.command-args }}.json"
 
       - name: Add Output Comment
         run: gh pr comment "${{ github.event.pull_request.number }}" -F message.md
