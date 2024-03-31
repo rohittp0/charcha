@@ -20,19 +20,19 @@ def add_moderator_claim(service_account_json, moderator_json_file):
     cred = credentials.Certificate(json.loads(service_account_json))
     firebase_admin.initialize_app(cred)
 
-    uid = moderator_data['uid']
+    email = moderator_data['email']
     name = moderator_data['name']
 
     # Set custom user claims
     try:
-        auth.get_user(uid)
+        user = auth.get_user_by_email(email)
     except auth.UserNotFoundError:
-        print(f"Unable to make {name} moderator, user with UID **{uid}** not found.")
+        print(f"Unable to make **{name}** moderator, user with Email `{email}` not found.")
         exit(1)
 
-    auth.set_custom_user_claims(uid, {'moderator': True})
+    auth.set_custom_user_claims(user.uid, {'moderator': True})
 
-    print(f"**{name}** has been successfully added as a moderator.\n\n---\n**UID**: {uid}")
+    print(f"**{name}** has been successfully added as a moderator.\n\n---\n**User**: `{email}`")
 
 
 if __name__ == '__main__':
