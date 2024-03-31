@@ -5,6 +5,7 @@ interface Message {
     text: string;
     sender: string;
     photo: string;
+    time: string;
 }
 
 interface Chat {
@@ -14,6 +15,7 @@ interface Chat {
     time: string;
     messages: Message[];
 }
+
 const chats: Chat[] = [
     {
         id: 1,
@@ -21,8 +23,20 @@ const chats: Chat[] = [
         lastMessage: 'Hey, how are you?',
         time: '12:45 pm',
         messages: [
-            { id: 1, text: 'Hey, how are you?', sender: 'John Doe', photo: `${process.env.PUBLIC_URL}/chat/avatar/1.webp` },
-            { id: 2, text: 'I\'m good, thanks! And you?', sender: 'You', photo: `${process.env.PUBLIC_URL}/chat/avatar/2.webp` },
+            {
+                id: 1,
+                text: 'Hey Jordan! Do you have any plans for the weekend? 🤔',
+                sender: 'John Doe',
+                photo: `${process.env.PUBLIC_URL}/chat/avatar/1.webp`,
+                time: '11:30pm'
+            },
+            {
+                id: 2,
+                text: 'Hey Alex! Not really, was thinking about maybe catching a movie or something. What about you?',
+                sender: 'You',
+                photo: `${process.env.PUBLIC_URL}/chat/avatar/2.webp`,
+                time: '11:30pm'
+            },
         ],
     },
     {
@@ -31,7 +45,13 @@ const chats: Chat[] = [
         lastMessage: 'Let\'s catch up tomorrow!',
         time: '11:30 am',
         messages: [
-            { id: 1, text: 'Let\'s catch up tomorrow!', sender: 'Jane Doe', photo: `${process.env.PUBLIC_URL}/chat/avatar/1.webp` },
+            {
+                id: 1,
+                text: 'Let\'s catch up tomorrow!',
+                sender: 'Jane Doe',
+                photo: `${process.env.PUBLIC_URL}/chat/avatar/1.webp`,
+                time: '11:30pm'
+            },
         ],
     },
 ];
@@ -64,7 +84,7 @@ const ChatUI = () => {
         <div className="flex h-screen">
             {/* Toggle between chat list and chat details on mobile */}
             {showChatList && (
-                <div className="w-full md:w-1/3 bg-gray-100 overflow-auto">
+                <div className="w-full md:w-1/4 bg-gray-100 overflow-auto">
                     {chats.map(chat => (
                         <div
                             key={chat.id}
@@ -82,25 +102,54 @@ const ChatUI = () => {
             )}
 
             {(!showChatList || !isMobileView) && (
-                <div className="flex-1 p-4">
-                    <button className="md:hidden mb-4" onClick={() => setShowChatList(true)}>Back</button>
-                    <div className="mb-4">
-                        <h2 className="text-xl font-bold">{activeChat.name}</h2>
-                        <p className="text-gray-600">Last seen recently</p>
+                <div className="flex-1 p-4 relative"
+                     style={{backgroundImage: `url(${process.env.PUBLIC_URL}/chat/bg.webp)`, backgroundSize: 'cover'}}
+                >
+
+                    {/*<div className="absolute inset-0 flex justify-center items-center">*/}
+                    {/*    <img src={`${process.env.PUBLIC_URL}/chat/logo.png`} alt="Logo" className="w-64 h-64" /> /!* Adjust size as needed *!/*/}
+                    {/*</div>*/}
+
+                    <div className="flex items-center justify-start gap-5 mb-4">
+                        <button
+                            className="md:hidden rounded-full p-1 bg-black text-white flex items-center justify-center shadow-lg"
+                            onClick={() => setShowChatList(true)}
+                            style={{width: '35px', height: '35px'}} // Adjusted the size of the button
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <div>
+                            <h2 className="text-xl font-bold">{activeChat.name}</h2>
+                            <p className="text-gray-600">Last seen recently</p>
+                        </div>
                     </div>
-                    <div className="flex flex-col space-y-4 overflow-auto">
-                        {activeChat.messages.map(message => (
-                            <div key={message.id} className={`flex ${message.sender === 'You' ? 'justify-end' : ''}`}>
-                                {message.sender !== 'You' && <img src={message.photo} alt="Sender" className="w-10 h-10 rounded-full mr-2" />}
-                                <div className={`rounded-lg px-4 py-2 max-w-xs ${message.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
-                                    <p className="text-sm">{message.text}</p>
+
+                    <div className="flex flex-col space-y-4 overflow-auto z-10">
+                        {activeChat.messages.map((message) => (
+                            <div key={message.id}
+                                 className={`flex ${message.sender === 'You' ? 'justify-end' : ''} mb-2 items-end`}>
+                                {message.sender !== 'You' &&
+                                    <img src={message.photo} alt="Sender" className="w-8 h-8 rounded-full mr-2"/>}
+
+                                {/* Use flex-row for the bubble to lay out text and time in a row */}
+                                <div
+                                    className={`flex flex-row items-end rounded-lg max-w-lg ${message.sender === 'You' ? 'bg-black text-white' : 'bg-gray-300 text-black'} px-4 py-2 ${message.sender === 'You' ? 'rounded-br-none' : 'rounded-bl-none'}`}>
+                                    <span className="text-sm flex-1">{message.text}</span>
+                                    <span className="text-xxs ml-2"
+                                          style={{fontSize: '0.6rem'}}>{message.time}</span> {/* Custom smaller text size */}
                                 </div>
-                                {message.sender === 'You' && <img src={message.photo} alt="Sender" className="w-10 h-10 rounded-full ml-2" />}
+
+                                {message.sender === 'You' &&
+                                    <img src={message.photo} alt="You" className="w-8 h-8 rounded-full ml-2"/>}
                             </div>
                         ))}
                     </div>
                 </div>
             )}
+
         </div>
     );
 };
