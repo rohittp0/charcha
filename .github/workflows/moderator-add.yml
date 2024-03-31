@@ -1,0 +1,52 @@
+name: Approve Moderator
+
+# The workflow to execute on is comments that are newly created
+on:
+  issue_comment:
+    types: [created]
+
+# Permissions needed for reacting and adding comments for IssueOps commands
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  approve:
+    if: ${{ github.event.issue.pull_request }} # only run on pull request comments
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Command
+        id: command
+        uses: xt0rted/slash-command-action@v1
+        with:
+          command: "approve"
+          reaction: "true"
+          reaction-type: "eyes"
+          allow-edits: "false"
+          permission-level: admin
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Command Arguments
+        run: |
+          ${{ steps.command.outputs.command-name }} == "approve" || exit 0
+
+      - uses: actions/checkout@v4
+
+      - name: Checkout Pull Request
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pip dependencies
+        run: pip3 install firebase-admin
+
+      - name: Add Firebase Auth Custom Claims
+        run: python3 scripts/add_moderator.py > message.md || echo "No moderators added"
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MODERATOR_FILE: ${{ steps.command.outputs.command-arguments }}
+
+      - name: Add Output Comment
+        run: gh pr comment "${{ github.event.issue.number }}" -F message.md
+        env:
+          GH_TOKEN: ${{ github.token }}
