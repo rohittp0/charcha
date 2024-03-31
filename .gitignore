@@ -25,3 +25,5 @@ ui/.env.production.local
 ui/npm-debug.log*
 ui/yarn-debug.log*
 ui/yarn-error.log*
+
+**/serviceAccount.json
