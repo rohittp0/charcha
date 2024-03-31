@@ -48,7 +48,7 @@ jobs:
             # Check if values were successfully extracted
             if [[ "$moderator_name" != "null" && "$moderator_email" != "null" ]]; then
               echo "### ${moderator_name} Wants to become a community moderator" > message.md
-              echo "Anyone with admin access can use `/approve` to approve this request." >> message.md
+              echo "Anyone with admin access can use \`/approve\` to approve this request." >> message.md
               echo "" >> message.md
               echo "---" >> message.md
               echo "**User**: \`${moderator_email}\`" >> message.md
