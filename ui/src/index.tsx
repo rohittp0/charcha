@@ -14,13 +14,12 @@ import {
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <ChatUI/>,
+        element: <LoginPage/>
     },
     {
-        path: "/login",
-        element: <LoginPage/>
-    }
-
+        path: "/chat",
+        element: <ChatUI/>,
+    },
 ]);
 
 const root = ReactDOM.createRoot(
