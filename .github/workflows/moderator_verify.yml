@@ -7,6 +7,10 @@ on:
     paths:
       - 'moderators/*.json'
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   verify-pr-conditions:
     runs-on: ubuntu-latest
@@ -19,14 +23,42 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gh jq
 
+      - name: Get all changed moderator json files
+        id: changed-markdown-files
+        uses: tj-actions/changed-files@v44
+        with:
+          # Avoid using single or double quotes for multiline patterns
+          files: |
+            moderators/*.json
+
       - name: Verify JSON structure and post message
-        run: |
-          FILE_ADDED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'moderators/.*.json')
-          NAME=$(jq -r '.name' $FILE_ADDED)
-          UID=$(jq -r '.uid' $FILE_ADDED)
-          DESCRIPTION=$(jq -r '.description' $FILE_ADDED)
-          MESSAGE="## ${NAME} Wants to become a community moderator\n\n### Description\n${DESCRIPTION}\n\n**UID**: \`${UID}\`"
-          echo "$MESSAGE" > message.md
-          gh pr comment "${{ github.event.pull_request.number }}" -F message.md
+        if: steps.changed-markdown-files.outputs.any_changed == 'true'
         env:
+          ALL_CHANGED_FILES: ${{ steps.changed-markdown-files.outputs.all_changed_files }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXIT_CODE=0
+          
+          for FILE_ADDED in ${ALL_CHANGED_FILES}; do
+            echo "Processing file: $FILE_ADDED"
+          
+            moderator_name=$(jq -r '.name' "$FILE_ADDED")
+            moderator_uid=$(jq -r '.uid' "$FILE_ADDED")
+            moderator_desc=$(jq -r '.description' "$FILE_ADDED")
+
+            # Check if values were successfully extracted
+            if [[ -n "$moderator_name" && -n "$moderator_uid" && -n "$moderator_desc" ]]; then
+              echo "### ${moderator_name} Wants to become a community moderator" > message.md
+              echo "${moderator_desc}" >> message.md
+              echo "" >> message.md
+              echo "---" >> message.md
+              echo "**UID**: \`${moderator_uid}\`" >> message.md
+            else
+              echo "Error: JSON structure is invalid for file: $FILE_ADDED" > message.md
+              EXIT_CODE=1
+            fi
+            
+            gh pr comment "${{ github.event.pull_request.number }}" -F message.md
+          done
+          
+          exit $EXIT_CODE
