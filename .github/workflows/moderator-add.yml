@@ -1,0 +1,55 @@
+name: Approve Moderator
+
+# The workflow to execute on is comments that are newly created
+on:
+  issue_comment:
+    types: [created]
+
+# Permissions needed for reacting and adding comments for IssueOps commands
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  demo:
+    if: ${{ github.event.issue.pull_request }} # only run on pull request comments
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Command
+        id: command
+        uses: xt0rted/slash-command-action@v1
+        with:
+          command: "approve"
+          reaction: "true"
+          reaction-type: "eyes"
+          allow-edits: "false"
+          permission-level: admin
+
+      - name: Verify Command Arguments
+        run: |
+          ${{ steps.command.outputs.command-name }} == "approve" || exit 0
+          ${{ steps.command.outputs.command-args }} | grep -q -E ".+\.json" || exit 0
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.branch-deploy.outputs.ref }}
+
+      - name: Check file exists
+        run: |
+          mod_file="moderators/${{ steps.command.outputs.command-args }}"
+          if [ ! -f mod_file ]; then
+            gh pr comment ${{ github.event.issue.number }} --body "The file ${{ steps.command.outputs.command-args }} does not exist."
+            exit 1
+          fi
+
+      - name: Install pip dependencies
+        run: pip3 install firebase-admin
+
+      - name: Add Firebase Auth Custom Claims
+        run: python3 scripts/add_moderator.py > message.md
+        with:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          MODERATOR_FILE: "moderators/${{ steps.command.outputs.command-args }}"
+
+      - name: Add Output Comment
+        run: gh pr comment "${{ github.event.pull_request.number }}" -F message.md
