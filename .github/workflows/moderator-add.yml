@@ -47,7 +47,7 @@ jobs:
 
       - name: Add Firebase Auth Custom Claims
         run: python3 scripts/add_moderator.py > message.md
-        with:
+        env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           MODERATOR_FILE: "moderators/${{ steps.command.outputs.command-args }}"
 
