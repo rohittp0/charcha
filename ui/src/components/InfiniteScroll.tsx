@@ -7,7 +7,7 @@ interface InfiniteScrollProps {
     pageLimit: number;
     collection: CollectionReference;
     orderBy: QueryOrderByConstraint;
-    onResult: (result: QueryDocumentSnapshot) => ReactElement;
+    onResult: (result: QueryDocumentSnapshot, index: number) => ReactElement;
 }
 
 export default function InfiniteScroll({pageLimit, collection, orderBy, onResult}: InfiniteScrollProps) {

@@ -85,11 +85,9 @@ export default function BaseLayout() {
                         </button>
                         <h2 className="text-xl font-bold">AAA</h2>
                     </div>
-                    <div className="p-4">
-                        <Routes>
-                            <Route path="/chats/:chat" element={<RightPane/>}/>
-                        </Routes>
-                    </div>
+                    <Routes>
+                        <Route path="/chats/:chatId" element={<RightPane/>}/>
+                    </Routes>
                 </div>
             }
         </div>
