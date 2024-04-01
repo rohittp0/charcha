@@ -62,26 +62,28 @@ def chat_worker(topic_queue: Queue, models: List[Model]):
     print("Chat worker started")
 
     while True:
-        topic = topic_queue.get(block=True).reference.get()
-
         try:
-            if topic.get("completed") or topic.get("active"):
-                print(f"Skipping as topic: {topic.get('prompt')} already completed or active")
-                topic_queue.task_done()
-                continue
+            topic = topic_queue.get(block=True).reference.get()
+            try:
+                if topic.get("completed") or topic.get("active"):
+                    print(f"Skipping as topic: {topic.get('prompt')} already completed or active")
+                    topic_queue.task_done()
+                    continue
 
-            topic.reference.update({"active": True})
-            chat_on_topic(topic, models)
+                topic.reference.update({"active": True, "last_seen": SERVER_TIMESTAMP})
+                chat_on_topic(topic, models)
+            except Exception as e:
+                print(f"Error: {e}")
+                topic.reference.update({"completed": True, "error": str(e)})
+            except KeyboardInterrupt:
+                topic.reference.update({"active": False})
+                topic_queue.task_done()
+                break
+            finally:
+                topic.reference.update({"active": False})
+                topic_queue.task_done()
         except Exception as e:
-            print(f"Error: {e}")
-            topic.reference.update({"completed": True, "error": str(e)})
-        except KeyboardInterrupt:
-            topic.reference.update({"active": False})
-            topic_queue.task_done()
-            break
-        finally:
-            topic.reference.update({"active": False})
-            topic_queue.task_done()
+            print(f"Critical error: {e}")
 
 
 def main():
