@@ -13,8 +13,6 @@
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.23",
     "firebase": "^10.10.0",
-    "i": "^0.3.7",
-    "npm": "^10.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",

@@ -1,33 +1,34 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom/client";
 import './index.css';
-import './pages/chat/chat.css';
-import ChatUI from "./pages/chat";
-import LoginPage from './pages/login';
 
 import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
 
+import {StrictMode} from "react";
+import {createRoot} from "react-dom/client";
+
+import BaseLayout from "./pages/layout";
+import LoginPage from './pages/login';
+
 
 const router = createBrowserRouter([
     {
-        path: "/",
+        path: "/login",
         element: <LoginPage/>
     },
     {
-        path: "/chat",
-        element: <ChatUI/>,
+        path: "/",
+        element: <BaseLayout/>,
     },
 ]);
 
-const root = ReactDOM.createRoot(
+const root = createRoot(
     document.getElementById('root') as HTMLElement
 );
 
 root.render(
-    <React.StrictMode>
+    <StrictMode>
         <RouterProvider router={router} />
-    </React.StrictMode>
+    </StrictMode>
 );

@@ -11,18 +11,17 @@ const LoginPage = () => {
 
     const signInWithGoogle = () => {
         signInWithPopup(auth, googleProvider)
-            .then(({ user }) => user && navigate('/chat'))
+            .then(({ user }) => user && navigate('/', { replace: true }))
             .catch((error) => setLoginError(error.message));
     };
 
     useEffect(() => {
-        if (user) {
-            navigate('/chat');
-        }
+        if (user)
+            navigate('/', { replace: true });
 
-        if (error) {
+        if (error)
             setLoginError(error.message);
-        }
+
     }, [user, navigate, error]);
 
     return (
