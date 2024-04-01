@@ -42,11 +42,13 @@ export default function RightPane() {
                         {!(index % 2) && userIcon(message, false)}
                         <div
                             className={getMessageStyle(index % 2 === 1)}>
-                            <div className="font-bold">{message.get("role")}</div>
-                            <p className="text-s ">{message.get("content")}</p>
-                            <p className="text-s ">{message.get("timestamp").toDate().toLocaleTimeString()}</p>
+                            <p className="font-bold">{message.get("role")}</p>
+                            <p className="text-s mb-1">{message.get("timestamp").toDate().toLocaleTimeString()}</p>
+                            <p className="text-s text-left">
+                                {message.get("content")}
+                            </p>
                         </div>
-                        {index % 2 && userIcon(message, true)}
+                        {!!(index % 2) && userIcon(message, true)}
                     </div>
                 )}
             />

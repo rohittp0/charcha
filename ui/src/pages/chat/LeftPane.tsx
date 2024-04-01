@@ -1,10 +1,14 @@
 import React, {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import InfiniteScroll from "../../components/InfiniteScroll";
-import {collection, DocumentData, orderBy} from "firebase/firestore";
+import {collection, DocumentData, orderBy, QueryDocumentSnapshot} from "firebase/firestore";
 import {firestore} from "../../api/firebase";
 
-export default function LeftPane() {
+interface PaneProps {
+    setHeader: (header: string) => void;
+}
+
+export default function LeftPane({setHeader}: PaneProps) {
     const navigate = useNavigate();
 
     const collectionMemo = useMemo(() =>
@@ -22,6 +26,11 @@ export default function LeftPane() {
         return 'Pending';
     }
 
+    function goToTopic(doc: QueryDocumentSnapshot) {
+        setHeader(doc.get("prompt"));
+        return navigate(`/chats/${doc.id}`);
+    }
+
     return (
         <InfiniteScroll
             pageLimit={5}
@@ -30,7 +39,7 @@ export default function LeftPane() {
             onResult={(doc) => (
                 <div key={doc.id}
                      className={`p-4 cursor-pointer hover:bg-gray-200 ${doc.get("active") ? 'bg-gray-300' : ''}`}
-                     onClick={() => navigate(`/chats/${doc.id}`)}>
+                     onClick={() => goToTopic(doc)}>
                     <p className="font-semibold">{doc.get("prompt")}</p>
                     <p className="text-sm text-gray-600">{getTopicState(doc)}</p>
                 </div>

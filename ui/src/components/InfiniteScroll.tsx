@@ -17,7 +17,7 @@ export default function InfiniteScroll({pageLimit, collection, orderBy, onResult
     const [done, setDone] = useState(false);
     const [error, setError] = useState<string>();
 
-    const fetchMore = async () => {
+    const fetchMore = useCallback(async () => {
         if (loading || done) return;
 
         setLoading(true);
@@ -26,7 +26,9 @@ export default function InfiniteScroll({pageLimit, collection, orderBy, onResult
 
         try {
             const querySnapshot = await getDocs(q);
-            if (querySnapshot.empty || querySnapshot.docs.length < pageLimit) setDone(true);
+            if (querySnapshot.empty || querySnapshot.docs.length < pageLimit) {
+                setDone(true);
+            }
 
             const newChildren = querySnapshot.docs.map(onResult);
 
@@ -37,9 +39,8 @@ export default function InfiniteScroll({pageLimit, collection, orderBy, onResult
         } finally {
             setLoading(false);
         }
-    };
+    }, [loading, done, lastDoc, collection, orderBy, pageLimit, onResult, children]);
 
-    const fetchMoreMemo = useCallback(fetchMore, []);
     const intersectionObserverRef = useRef<IntersectionObserver>();
 
     const lastCallback = useCallback((node: Element) => {
@@ -51,30 +52,41 @@ export default function InfiniteScroll({pageLimit, collection, orderBy, onResult
 
         intersectionObserverRef.current = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting)
-                fetchMoreMemo().then();
+                fetchMore().then();
         });
 
         intersectionObserverRef.current.observe(node);
 
-    }, [intersectionObserverRef, fetchMoreMemo]);
+    }, [fetchMore]);
 
     useEffect(() => {
-        fetchMoreMemo().then();
+        if (children.length === 0)
+            fetchMore().then();
 
         return () => {
             if (intersectionObserverRef.current)
                 intersectionObserverRef.current.disconnect();
+
+            setChildren(() => [])
+            setLastDoc(() => undefined)
+            setDone(() => false)
         };
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [collection, orderBy]);
 
     return (
         <>
             {children.map((child, index) => (
                 cloneElement(child, {ref: children.length === index + 1 ? lastCallback : undefined})
             ))}
-            {error && <div className="text-red-600">{error}</div>}
+            {children.length === 0 && !loading && !error && !done &&
+                <button onClick={fetchMore} className="p-2 w-full text-center bg-gray-200 hover:bg-gray-300">
+                    Load More
+                </button>
+            }
+            {error && <div className="text-red-600 p-2">{error}</div>}
             {loading &&
-                <div role="status" className="w-100 flex items-center justify-center p-2">
+                <div role="status" className="m-auto flex items-center justify-center p-2">
                     <svg aria-hidden="true"
                          className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                          viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

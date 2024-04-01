@@ -10,6 +10,7 @@ export default function BaseLayout() {
     const {pathname} = useLocation();
 
     const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
+    const [header, setHeader] = useState("Select a chat");
 
     useEffect(() => {
         const handleResize = () => setIsMobileView(window.innerWidth < 768);
@@ -62,7 +63,7 @@ export default function BaseLayout() {
                              style={{filter: 'brightness(0) invert(1)'}} className="h-12 w-32"/>
                     </div>
                     <Routes>
-                        <Route path="/*" element={<LeftPane/>}/>
+                        <Route path="/*" element={<LeftPane setHeader={setHeader}/>}/>
                     </Routes>
                 </div>
             }
@@ -83,7 +84,7 @@ export default function BaseLayout() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                             </svg>
                         </button>
-                        <h2 className="text-xl font-bold">AAA</h2>
+                        <h2 className="text-xl font-bold">{header}</h2>
                     </div>
                     <Routes>
                         <Route path="/chats/:chatId" element={<RightPane/>}/>
