@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { fetchTopics, fetchMessagesForTopic } from '../../api/firebase';
 import { Timestamp } from 'firebase/firestore';
+import LeftPane from './LeftPane';
+import RightPane from './RightPane';
 
 interface Topic {
     id: string;
@@ -98,19 +100,6 @@ const ChatUI = () => {
 
     return (
         <div className="flex h-screen overflow-hidden">
-            {showChatList && (
-                <div className={`w-full md:w-1/4 bg-gray-100 overflow-y-auto ${isMobileView && !showChatList ? 'hidden' : ''}`} style={{ maxHeight: '100vh' }}>
-                    <div className="bg-gray-800 p-3 flex items-center justify-center h-[70px]">
-                        <img src={`${process.env.PUBLIC_URL}/chat/logo.png`} alt="Logo" style={{ filter: 'brightness(0) invert(1)' }} className="h-12 w-32" />
-                    </div>
-                    {topics.map((topic) => (
-                        <div key={topic.id} className={`p-4 cursor-pointer hover:bg-gray-200 ${activeTopicId === topic.id ? 'bg-gray-300' : ''}`} onClick={() => handleTopicSelection(topic.id)}>
-                            <p className="font-semibold">{topic.prompt}</p>
-                            <p className="text-sm text-gray-600">{topic.active ? 'Active' : 'Completed'}</p>
-                        </div>
-                    ))}
-                </div>
-            )}
 
             {(!showChatList || !isMobileView) && activeTopicId && (
                 <div className={`flex-1 overflow-y-auto ${isMobileView && showChatList ? 'hidden' : ''}`} style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/chat/bg.webp)`, backgroundRepeat: 'repeat', maxHeight: '100vh' }}>
@@ -157,4 +146,4 @@ const ChatUI = () => {
     );
 };
 
-export default ChatUI;
+export {LeftPane, RightPane};
