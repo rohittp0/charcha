@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { collection, query, orderBy, startAfter, limit, getDocs, QueryConstraint, Timestamp } from "firebase/firestore";
-import firebaseConfig from "../../firebase-config";
+import firebaseConfig from "../firebase-config";
 
 
 const app = initializeApp(firebaseConfig);

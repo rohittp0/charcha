@@ -72,7 +72,7 @@ Ok now while the dependencies are installing, let's set up the Firebase project.
         appId: "APP_ID"
     };
     ```
-   Paste this in `ui/firebase-config.ts`. It should now look something like:
+   Paste this in `ui/src/firebase-config.ts`. It should now look something like:
     ```ts
     const firebaseConfig = {
         apiKey: "API_KEY",
