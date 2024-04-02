@@ -10,7 +10,7 @@ export default function BaseLayout() {
     const {pathname} = useLocation();
 
     const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
-    const [header, setHeader] = useState("Select a chat");
+    const [header, setHeader] = useState("");
 
     useEffect(() => {
         const handleResize = () => setIsMobileView(window.innerWidth < 768);
@@ -56,22 +56,33 @@ export default function BaseLayout() {
         <div className="flex h-screen overflow-hidden">
             {(!isMobileView || !subPath) &&
                 <div
-                    className="w-full md:w-1/4 bg-gray-100 overflow-y-auto"
+                    className="w-full md:w-1/4 bg-gray-100 overflow-y-auto flex flex-col"
                     style={{maxHeight: '100vh'}}>
                     <div className="bg-gray-800 p-3 flex items-center justify-center h-[70px]">
-                        <img src={`${process.env.PUBLIC_URL}/chat/logo.png`} alt="Logo"
+                        <img src={`${process.env.PUBLIC_URL}/img/logo.png`} alt="Logo"
                              style={{filter: 'brightness(0) invert(1)'}} className="h-12 w-32"/>
                     </div>
                     <Routes>
                         <Route path="/*" element={<LeftPane setHeader={setHeader}/>}/>
                     </Routes>
+                    <div className="flex flex-grow"/>
+                    <div className="p-4 flex justify-center">
+                        <a href="https://github.com/rohittp0/charcha/"
+                           className="font-bold" target="_blank" rel="noreferrer">
+                            View on Github
+                        </a>
+                        <object type="image/svg+xml" data={`${process.env.PUBLIC_URL}/img/github.svg`}
+                                className="h-6 w-6 ml-2">
+                            Github Logo
+                        </object>
+                    </div>
                 </div>
             }
 
             {(!isMobileView || subPath) &&
                 <div className={"flex-1 overflow-y-auto"}
                      style={{
-                         backgroundImage: `url(${process.env.PUBLIC_URL}/chat/bg.webp)`,
+                         backgroundImage: `url(${process.env.PUBLIC_URL}/img/chat/bg.webp)`,
                          backgroundRepeat: 'repeat',
                          maxHeight: '100vh'
                      }}
