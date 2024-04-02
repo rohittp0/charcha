@@ -13,7 +13,7 @@ export default function RightPane() {
         orderBy("timestamp", "asc"), []);
 
     function userIcon(msg: QueryDocumentSnapshot<DocumentData, DocumentData>, isMessageOnRight: boolean) {
-        const src = `${process.env.PUBLIC_URL}/chat/avatar/${msg.get("role").toLowerCase()}.webp`
+        const src = `${process.env.PUBLIC_URL}/img/chat/avatar/${msg.get("role").toLowerCase()}.webp`
         return (
             <div className={`flex items-end ${isMessageOnRight ? "ml-2" : ""}`}>
                 <img src={src} alt={msg.get("role")}
