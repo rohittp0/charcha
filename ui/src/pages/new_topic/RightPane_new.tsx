@@ -4,10 +4,9 @@ import { auth } from "../../api/firebase"; // Adjust the path as necessary
 import { addDoc, serverTimestamp, collection } from "firebase/firestore";
 import { firestore } from "../../api/firebase"; // Adjust the path as necessary
 
-// Interface for a message, simplifying to only include what's used
 interface IMessage {
     content: string;
-    timestamp?: Date; // Optional because it's set after adding to Firestore
+    timestamp?: Date;
 }
 
 export default function RightPane_new() {
@@ -33,7 +32,6 @@ export default function RightPane_new() {
             setMessage(""); // Clear the input after sending
         } catch (err) {
             console.error("Error adding topic:", err);
-            // Optionally, handle the error (e.g., display a message to the user)
         }
     };
 
