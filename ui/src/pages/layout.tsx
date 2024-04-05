@@ -3,6 +3,7 @@ import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../api/firebase";
 import React, {useEffect, useState} from "react";
 import {LeftPane, RightPane} from "./chat";
+import {LeftPane_new, RightPane_new} from "./new_topic"
 
 export default function BaseLayout() {
     const navigate = useNavigate(); // Hook to programmatically navigate
@@ -63,6 +64,7 @@ export default function BaseLayout() {
                              style={{filter: 'brightness(0) invert(1)'}} className="h-12 w-32"/>
                     </div>
                     <Routes>
+                        <Route path="/new/*" element={<LeftPane_new />}/>
                         <Route path="/*" element={<LeftPane setHeader={setHeader}/>}/>
                     </Routes>
                     <div className="flex flex-grow"/>
@@ -99,6 +101,7 @@ export default function BaseLayout() {
                     </div>
                     <Routes>
                         <Route path="/chats/:chatId" element={<RightPane/>}/>
+                        <Route path="/new/:userId" element={<RightPane_new/>}/>
                     </Routes>
                 </div>
             }

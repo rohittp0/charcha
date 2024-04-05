@@ -21,6 +21,7 @@ const router = createBrowserRouter([
         path: "/*",
         element: <BaseLayout/>,
     },
+
 ]);
 
 const root = createRoot(
