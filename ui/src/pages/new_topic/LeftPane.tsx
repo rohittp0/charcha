@@ -6,7 +6,7 @@ import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../api/firebase";
 
 
-export default function LeftPane_new( ) {
+export default function LeftPane( ) {
     const [user] = useAuthState(auth);
 
     const collectionMemo = useMemo(() =>

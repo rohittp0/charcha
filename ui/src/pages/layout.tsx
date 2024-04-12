@@ -2,8 +2,9 @@ import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../api/firebase";
 import React, {useEffect, useState} from "react";
-import {LeftPane, RightPane} from "./chat";
-import {LeftPane_new, RightPane_new} from "./new_topic"
+
+import * as Chat from "./chat";
+import * as NewTopic from "./new_topic"
 
 export default function BaseLayout() {
     const navigate = useNavigate(); // Hook to programmatically navigate
@@ -64,8 +65,8 @@ export default function BaseLayout() {
                              style={{filter: 'brightness(0) invert(1)'}} className="h-12 w-32"/>
                     </div>
                     <Routes>
-                        <Route path="/new/*" element={<LeftPane_new />}/>
-                        <Route path="/*" element={<LeftPane setHeader={setHeader}/>}/>
+                        <Route path="/new/*" element={<NewTopic.LeftPane />}/>
+                        <Route path="/*" element={<Chat.LeftPane setHeader={setHeader}/>}/>
                     </Routes>
                     <div className="flex flex-grow"/>
                     <div className="p-4 flex justify-center">
@@ -100,8 +101,8 @@ export default function BaseLayout() {
                         <h2 className="text-xl font-bold">{header}</h2>
                     </div>
                     <Routes>
-                        <Route path="/chats/:chatId" element={<RightPane/>}/>
-                        <Route path="/new/:userId" element={<RightPane_new/>}/>
+                        <Route path="/chats/:chatId" element={<Chat.RightPane/>}/>
+                        <Route path="/new/:userId" element={<NewTopic.RightPane/>}/>
                     </Routes>
                 </div>
             }
