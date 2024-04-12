@@ -10,7 +10,7 @@ export default function LeftPane( ) {
     const [user] = useAuthState(auth);
 
     const collectionMemo = useMemo(() =>
-        collection(firestore, `submissions/${user?.uid}/topics`), []);
+        collection(firestore, `submissions/${user?.uid}/topics`), [user]);
     const orderByMemo = useMemo(() =>
         orderBy("timestamp", "desc"), []);
 
