@@ -1,4 +1,4 @@
-import LeftPane_new from './LeftPane_new';
-import RightPane_new from './RightPane_new';
+import LeftPane from './LeftPane';
+import RightPane from './RightPane';
 
-export {LeftPane_new, RightPane_new};
+export {LeftPane, RightPane};

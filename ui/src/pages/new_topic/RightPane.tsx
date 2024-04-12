@@ -9,7 +9,7 @@ interface IMessage {
     timestamp?: Date;
 }
 
-export default function RightPane_new() {
+export default function RightPane() {
     const [user] = useAuthState(auth);
     const [message, setMessage] = useState("");
     const [recentMessage, setRecentMessage] = useState<IMessage | null>(null);
